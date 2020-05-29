@@ -87,7 +87,8 @@ def process(folder):
     result = {}
 
     for filename in os.listdir(folder):
-        calculate(result, os.path.join(folder, filename))
+        if filename.lower().endswith('xlsx'):
+            calculate(result, os.path.join(folder, filename))
 
     return result
 
