@@ -1,5 +1,6 @@
 import openpyxl
-from _datetime import datetime
+import datetime
+import sys
 
 
 # return the column number and the title of the column
@@ -30,17 +31,17 @@ def get_number(content):
 def calc_row(col_title, data, row):
     for col, name in col_title.items():
         data[name]["assets"] += get_number(row[col])
-        data[name]["errors"] += get_number(row[col+1])
+        data[name]["errors"] += get_number(row[col + 1])
     return
 
 
 # show the result
-def show(data):
+def show(begin, end, data):
+    print(f"[QC and Production Report] from {begin} to {end}:")
     for name, content in data.items():
         result = name.ljust(10, ' ')
-        for k,v in content.items():
+        for k, v in content.items():
             result += " | " + str(v).rjust(3, ' ')
-            # print(f"\t{k}: {v}")
         print(result)
 
 
@@ -62,7 +63,7 @@ def process(begin, end):
         if row_num == TITLE_LINE:
             col_title = get_col_title(row)
             for name in col_title.values():
-                data[name] = {"assets": 0, "errors":0}
+                data[name] = {"assets": 0, "errors": 0}
 
         # skid the first 2 title lines
         if row_num <= TITLE_LINE:
@@ -75,10 +76,27 @@ def process(begin, end):
     return data
 
 
-def main():
-    result = process("2020-05-18", "2020-05-22")
-    show(result)
+# def main():
+#     result = process("2020-05-25", "2020-05-29")
+#     show(result)
+def last_week():
+    today = datetime.datetime.now()
+
+    weekday = today.weekday()
+    last_monday = today + datetime.timedelta(days=(-7 - weekday))
+    last_saturday = today + datetime.timedelta(days=(-2 - weekday))
+
+    return last_monday.strftime("%Y-%m-%d"), last_saturday.strftime("%Y-%m-%d")
 
 
 if __name__ == "__main__":
-    main()
+    begin = ""
+    end = ""
+    if len(sys.argv) == 3:
+        begin = sys.argv[1]
+        end = sys.argv[2]
+    else:
+        begin, end = last_week()
+
+    result = process(begin, end)
+    show(begin, end, result)
