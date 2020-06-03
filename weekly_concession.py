@@ -2,6 +2,7 @@ import openpyxl
 import warnings
 import datetime
 import sys
+import shutil
 
 
 # return the first and last day of last week
@@ -79,13 +80,19 @@ def main(begin, end, src, dst):
                 new_row.insert(0, title)
                 new_sheet.append(new_row)
 
-    new_wb.save(dst)
     show(new_sheet.values)
 
+    try:
+        new_wb.save(dst)
+    except PermissionError:
+        print(f"Sorry, I can't save file {dst}. Please close the file and try again.")
 
+
+# Main Function
 if __name__ == "__main__":
     # Original file
-    CONCESSION_FILE = "C:/Users/caguoa00/OneDrive - Ingram Micro/Work/Concession v2.xlsx"
+    SRC_CONCESSION_FILE = "C:/Users/caguoa00/OneDrive - Ingram Micro/Work/Concession v2.xlsx"
+    DST_CONCESSION_FILE = "concession/Concession v2.xlsx"
     # Weekly file - new
     WEEKLY_FILE = "concession/weekly.xlsx"
 
@@ -97,5 +104,7 @@ if __name__ == "__main__":
     else:
         begin, end = last_week()
 
+    shutil.copyfile(SRC_CONCESSION_FILE, DST_CONCESSION_FILE)
+
     print(f"Concession Report From {begin} to {end}:")
-    main(begin, end, CONCESSION_FILE, WEEKLY_FILE)
+    main(begin, end, DST_CONCESSION_FILE, WEEKLY_FILE)
