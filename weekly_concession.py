@@ -31,7 +31,7 @@ def show(values):
         result[s] += 1
 
     # print(f"{result}")
-    for k,v in result.items():
+    for k, v in result.items():
         print(f"{k}: {v}")
     print(f"Total: {n}")
 
