@@ -51,12 +51,17 @@ def show(begin, end, data):
 def process(begin, end):
     # Title is in 2nd line
     TITLE_LINE = 2
-    filename = "qc_prod/QC and Productivity-2020.xlsx"
-    wb = openpyxl.load_workbook(filename, data_only=True)
+    filename = "C:/Users/caguoa00/OneDrive - Ingram Micro/Work/QC and Productivity-2020.xlsx"
+    data = {}
+    try:
+        wb = openpyxl.load_workbook(filename, data_only=True)
+    except PermissionError:
+        print(f"Please close this file and try again: \n{filename}")
+        return data
+
     summary_sheet = wb["Summary-Daily"]
     # sheet = wb["QC-Weekly"]
     row_num = 0
-    data = {}
     for row in summary_sheet.values:
         row_num += 1
         # process column title
@@ -99,4 +104,5 @@ if __name__ == "__main__":
         begin, end = last_week()
 
     result = process(begin, end)
-    show(begin, end, result)
+    if result != {}:
+        show(begin, end, result)
