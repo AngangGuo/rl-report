@@ -16,24 +16,37 @@ def last_week():
     return last_monday.strftime("%Y-%m-%d"), last_saturday.strftime("%Y-%m-%d")
 
 
-def show(values):
-    n = -1
-    result = {}
-    for v in values:
-        n += 1
-        # skip the title line
-        if n == 0:
-            continue
-        s = (v[9].strip().title())[:6]
-        if result.get(s) is None:
-            result[s] = 0
+def show(begin, end, values):
+    # column number for "Possible Issue From" in Weekly sheet
+    col = 9
 
-        result[s] += 1
+    row = -1
+    result = {}
+    print(f"Concession Report From {begin} to {end}:")
+    for v in values:
+        row += 1
+        # skip the title row
+        if row == 0:
+            continue
+        issue_from = v[col]
+        # fix: TypeError: 'NoneType' object is not subscriptable
+        try:
+            # Keep the first 6 characters only for easy sum up
+            # customer == customer / Ingram == Customer/Amazon ...
+            issue_from = issue_from[:6].strip().title()
+        except TypeError:
+            print(issue_from)
+            continue
+
+        if result.get(issue_from) is None:
+            result[issue_from] = 0
+
+        result[issue_from] += 1
 
     # print(f"{result}")
     for k, v in result.items():
         print(f"{k}: {v}")
-    print(f"Total: {n}")
+    print(f"Total: {row}")
 
 
 def main(begin, end, src, dst):
@@ -80,12 +93,13 @@ def main(begin, end, src, dst):
                 new_row.insert(0, title)
                 new_sheet.append(new_row)
 
-    show(new_sheet.values)
-
     try:
         new_wb.save(dst)
     except PermissionError:
         print(f"Sorry, I can't save file {dst}. Please close the file and try again.")
+
+    return new_sheet.values
+    # show(begin, end, new_sheet.values)
 
 
 # Main Function
@@ -104,7 +118,8 @@ if __name__ == "__main__":
     else:
         begin, end = last_week()
 
+    # Work on the local copy of the file to prevent permission error when others open the file
     shutil.copyfile(SRC_CONCESSION_FILE, DST_CONCESSION_FILE)
 
-    print(f"Concession Report From {begin} to {end}:")
-    main(begin, end, DST_CONCESSION_FILE, WEEKLY_FILE)
+    values = main(begin, end, DST_CONCESSION_FILE, WEEKLY_FILE)
+    show(begin, end, values)
