@@ -50,7 +50,7 @@ def show(begin, end, data):
 # Date format: "2020-05-11"
 def process(begin, end):
     # Title is in 2nd line
-    TITLE_LINE = 2
+    TITLE_LINE = 23
     filename = "C:/Users/caguoa00/OneDrive - Ingram Micro/Work/QC and Productivity-2020.xlsx"
     data = {}
     try:
